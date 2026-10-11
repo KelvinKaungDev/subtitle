@@ -1,0 +1,7 @@
+fastapi
+uvicorn[standard]
+yt-dlp
+mlx-whisper
+openai
+python-dotenv
+pillow

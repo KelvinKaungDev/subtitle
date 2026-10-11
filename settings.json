@@ -1,0 +1,15 @@
+{
+  "openai_model": "gpt-4o",
+  "whisper_model": "mlx-community/whisper-large-v3-turbo",
+  "max_segment_seconds": 6.0,
+  "max_segment_chars": 84,
+  "caption_languages": [
+    "en",
+    "en-US",
+    "en-GB",
+    "en-orig"
+  ],
+  "burn_bottom_margin": 0.07,
+  "burn_background": "none",
+  "cookies_from_browser": ""
+}
