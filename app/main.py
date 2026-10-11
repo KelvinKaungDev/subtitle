@@ -6,8 +6,11 @@ from fastapi.responses import FileResponse
 from pydantic import BaseModel
 
 import json
+import re
+import shutil
+import time
 
-from . import jobs, pipeline, translate
+from . import jobs, pipeline, render, translate
 from .config import ROOT, load_settings
 from .download import check_youtube_url
 
@@ -178,6 +181,58 @@ def put_settings(body: BurnSettings):
     return get_settings()
 
 
+@app.get("/api/jobs/{job_id}/preview")
+def preview(job_id: str, seg: int):
+    """A frame of the video with the chosen subtitle drawn exactly as the final render will."""
+    _job(job_id)
+    d = jobs.job_dir(job_id)
+    segment = next((s for s in jobs.load_segments(job_id) if s["id"] == seg), None)
+    if segment is None:
+        raise HTTPException(404, "Segment not found")
+    out = d / "preview.jpg"
+    try:
+        render.preview_frame(d / "original.mp4", segment, jobs.get_lang(job_id)["key"], out)
+    except Exception as e:
+        raise HTTPException(500, f"Preview failed: {e}")
+    return FileResponse(out, media_type="image/jpeg", headers={"Cache-Control": "no-store"})
+
+
+RUNNING = ("downloading", "transcribing", "rendering")
+
+
+def _is_running(job: dict) -> bool:
+    """A job counts as running only if it also reported progress recently (not a crashed leftover)."""
+    return job["state"] in RUNNING and time.time() - job.get("updated", 0) < 90
+
+
+@app.delete("/api/jobs/{job_id}")
+def delete_job(job_id: str):
+    job = _job(job_id)
+    if _is_running(job):
+        raise HTTPException(409, "This job is still working. Wait for it to finish, then delete it.")
+    shutil.rmtree(jobs.job_dir(job_id))
+    return {"deleted": job_id}
+
+
+@app.post("/api/jobs/{job_id}/retry")
+def retry_job(job_id: str, bg: BackgroundTasks):
+    """Try again after an error: redo the failed step, keeping whatever already worked."""
+    job = _job(job_id)
+    if _is_running(job):
+        raise HTTPException(409, "This job is still working.")
+    d = jobs.job_dir(job_id)
+    if (d / "original.mp4").exists() and (d / "segments.json").exists():
+        segs = jobs.load_segments(job_id)
+        key = jobs.get_lang(job_id)["key"]
+        ready = key == "en" or any(s["my"] for s in segs)
+        jobs.set_status(job_id, "waiting_review" if ready else "translating", 100,
+                        "Ready - try again" if ready else "Needs translation")
+    else:
+        jobs.set_status(job_id, "downloading", 0, "Trying again")
+        bg.add_task(_safe, pipeline.step_get_english, job_id)
+    return {"ok": True}
+
+
 @app.get("/api/jobs/{job_id}/video")
 def video(job_id: str):
     path = jobs.job_dir(job_id) / "original.mp4"
@@ -196,4 +251,5 @@ def download(job_id: str, kind: str):
     path = jobs.job_dir(job_id) / name
     if not path.exists():
         raise HTTPException(404, "File not created yet")
-    return FileResponse(path, filename=pretty)
+    title = re.sub(r"[^\w\- ]+", "", jobs.get_status(job_id).get("title", ""))[:60].strip()
+    return FileResponse(path, filename=f"{title} - {pretty}" if title else pretty)

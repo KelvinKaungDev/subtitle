@@ -5,53 +5,76 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Myanmar Dub</title>
 <style>
-  :root { --bg:#f6f7f9; --card:#fff; --text:#1c2230; --muted:#667085; --line:#e3e6ec;
-          --accent:#3b5bdb; --ok:#2b8a3e; --err:#c92a2a; }
+  :root { --bg:#f5f6f8; --card:#fff; --text:#1c2230; --muted:#667085; --line:#e3e6ec;
+          --accent:#3b5bdb; --accent-text:#fff; --ok:#2b8a3e; --err:#c92a2a; --warn:#d9730d; }
   @media (prefers-color-scheme: dark) {
     :root { --bg:#14161b; --card:#1d2027; --text:#e8eaf0; --muted:#9aa3b2; --line:#2e333d;
-            --accent:#748ffc; --ok:#69db7c; --err:#ff8787; } }
+            --accent:#748ffc; --accent-text:#10131a; --ok:#69db7c; --err:#ff8787; --warn:#ffa94d; } }
   * { box-sizing:border-box; }
   body { margin:0; background:var(--bg); color:var(--text);
          font:15px/1.5 -apple-system, "Myanmar Sangam MN", "Noto Sans Myanmar", sans-serif; }
-  main { max-width:1100px; margin:0 auto; padding:20px 16px 60px; }
+  main { max-width:1120px; margin:0 auto; padding:20px 16px 60px; }
   h1 { font-size:22px; margin:0 0 16px; } h1 a { color:inherit; text-decoration:none; }
-  .card { background:var(--card); border:1px solid var(--line); border-radius:10px;
-          padding:16px; margin-bottom:16px; }
-  input[type=text], textarea { width:100%; padding:9px 11px; border:1px solid var(--line);
-          border-radius:8px; background:var(--bg); color:var(--text); font:inherit; }
-  button, .btn { background:var(--accent); color:#fff; border:0; border-radius:8px; padding:9px 16px;
-          font:inherit; cursor:pointer; text-decoration:none; display:inline-block; }
-  button.secondary, .btn.secondary { background:transparent; color:var(--accent);
-          border:1px solid var(--accent); }
+  h2 { font-size:16px; margin:0 0 6px; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:16px; margin-bottom:16px; }
+  input[type=text], textarea, select { padding:9px 11px; border:1px solid var(--line); border-radius:8px;
+          background:var(--bg); color:var(--text); font:inherit; }
+  input[type=text], textarea { width:100%; }
+  button, .btn { background:var(--accent); color:var(--accent-text); border:1px solid var(--accent); border-radius:8px;
+          padding:9px 16px; font:inherit; cursor:pointer; text-decoration:none; display:inline-block; }
+  button.secondary, .btn.secondary { background:transparent; color:var(--accent); }
+  button.danger { background:transparent; color:var(--err); border-color:var(--err); }
+  button.small { padding:4px 10px; font-size:13px; }
   button:disabled { opacity:.5; cursor:default; }
+  button:focus-visible, a:focus-visible, textarea:focus-visible, input:focus-visible, select:focus-visible
+    { outline:2px solid var(--accent); outline-offset:2px; }
   .row { display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
+  .grow { flex:1; min-width:0; }
   .muted { color:var(--muted); font-size:13px; }
-  .job { display:flex; justify-content:space-between; gap:12px; padding:10px 0;
-         border-top:1px solid var(--line); cursor:pointer; }
-  .job:first-child { border-top:0; }
-  .badge { font-size:12px; padding:2px 9px; border-radius:99px; border:1px solid var(--line);
-           white-space:nowrap; }
+  .spread { justify-content:space-between; }
+  .badge { font-size:12px; padding:2px 9px; border-radius:99px; border:1px solid var(--line); white-space:nowrap; }
   .badge.error { color:var(--err); border-color:var(--err); }
   .badge.done { color:var(--ok); border-color:var(--ok); }
-  .bar { height:8px; background:var(--line); border-radius:99px; overflow:hidden; margin:8px 0; }
+  .badge.lang { color:var(--accent); border-color:var(--accent); }
+  .bar { height:6px; background:var(--line); border-radius:99px; overflow:hidden; margin:6px 0 2px; }
   .bar > div { height:100%; background:var(--accent); transition:width .3s; }
-  .error-box { border:1px solid var(--err); color:var(--err); border-radius:8px;
-               padding:10px 12px; margin:10px 0; white-space:pre-wrap; }
-  .warn-box { border:1px solid #f08c00; color:#e67700; border-radius:8px; padding:8px 12px; margin:10px 0; }
-  .review { display:grid; grid-template-columns: 360px 1fr; gap:16px; align-items:start; }
-  @media (max-width: 800px) { .review { grid-template-columns:1fr; } }
+  .error-box { border:1px solid var(--err); color:var(--err); border-radius:8px; padding:10px 12px; margin:10px 0; white-space:pre-wrap; }
+  .warn-box { border:1px solid var(--warn); color:var(--warn); border-radius:8px; padding:8px 12px; margin:0 0 16px; }
+  .saved { color:var(--ok); font-size:13px; }
+  /* job list */
+  .job { display:flex; gap:12px; align-items:center; padding:12px 0; border-top:1px solid var(--line); }
+  .job:first-child { border-top:0; }
+  .job a.title { color:inherit; text-decoration:none; font-weight:600; display:block; overflow:hidden;
+                 text-overflow:ellipsis; white-space:nowrap; }
+  .job a.title:hover { color:var(--accent); }
+  .empty { text-align:center; padding:28px 8px; }
+  /* review */
+  .review { display:grid; grid-template-columns: 380px 1fr; gap:16px; align-items:start; }
+  @media (max-width: 860px) { .review { grid-template-columns:1fr; } .player { position:static !important; } }
   .player { position:sticky; top:12px; }
-  video { width:100%; max-height:70vh; background:#000; border-radius:8px; }
-  #live { min-height:44px; margin-top:8px; text-align:center; font-size:17px; }
-  .seg { display:grid; grid-template-columns:78px 1fr; gap:6px 12px; padding:10px 0;
-         border-top:1px solid var(--line); }
+  .vwrap { position:relative; container-type:inline-size; background:#000; border-radius:8px; overflow:hidden; }
+  video { display:block; width:100%; max-height:62vh; margin:0 auto; background:#000; }
+  #cap { position:absolute; text-align:center; color:#fff; pointer-events:none;
+         line-height:1.35; font-weight:600;
+         -webkit-text-stroke:.09em #000; paint-order:stroke fill;
+         text-shadow:0 0 .15em #000; white-space:pre-wrap; }
+  .tools { margin-top:12px; }
+  .tools label { display:flex; gap:6px; align-items:center; }
+  #pvBox img { width:100%; border-radius:8px; margin-top:8px; display:block; }
+  .section { border-top:1px solid var(--line); margin-top:14px; padding-top:12px; }
+  .seg { display:grid; grid-template-columns:64px 1fr; gap:4px 12px; padding:10px 8px; border-top:1px solid var(--line);
+         border-radius:8px; }
+  .seg:first-of-type { border-top:0; }
   .seg.active { background:color-mix(in srgb, var(--accent) 10%, transparent); }
-  .time { font:12px ui-monospace, monospace; color:var(--accent); cursor:pointer; padding-top:3px; }
-  .en { color:var(--muted); cursor:pointer; }
-  textarea.my { grid-column:2; min-height:42px; resize:vertical; font-size:16px; }
-  .saved { font-size:12px; color:var(--ok); }
+  .time { font:12px ui-monospace, monospace; color:var(--accent); cursor:pointer; padding-top:6px; background:none;
+          border:0; text-align:left; }
+  .en { color:var(--muted); cursor:pointer; grid-column:2; font-size:14px; }
+  textarea.my { grid-column:2; min-height:44px; resize:vertical; font-size:16px; line-height:1.6; }
+  textarea.my.bad { border-color:var(--warn); }
+  .hint { grid-column:2; font-size:12px; color:var(--warn); min-height:0; }
   pre.prompt { max-height:200px; overflow:auto; background:var(--bg); padding:10px; border-radius:8px;
                white-space:pre-wrap; font-size:12px; border:1px solid var(--line); }
+  @media (prefers-reduced-motion: reduce) { .bar > div { transition:none; } }
 </style>
 </head>
 <body>
@@ -62,12 +85,11 @@
 <script>
 const $ = (s, el=document) => el.querySelector(s);
 const app = $('#app');
-let timer = null, segTimes = [], actionPending = false, actionStart = 0;
+let timer = null, actionPending = false, actionStart = 0;
 
 async function api(path, opts) {
   const r = await fetch('/api' + path, opts && {
-    method: opts.method, headers: {'Content-Type':'application/json'},
-    body: JSON.stringify(opts.body) });
+    method: opts.method, headers: {'Content-Type':'application/json'}, body: JSON.stringify(opts.body) });
   if (!r.ok) {
     let msg = r.statusText;
     try { msg = (await r.json()).detail || msg; } catch (e) {}
@@ -76,12 +98,15 @@ async function api(path, opts) {
   return r.json();
 }
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-const fmt = t => { const m = Math.floor(t/60), s = (t%60).toFixed(1).padStart(4,'0'); return `${m}:${s}`; };
+const fmt = t => `${Math.floor(t/60)}:${(t%60).toFixed(1).padStart(4,'0')}`;
 const LABEL = {downloading:'Downloading', transcribing:'Getting English text', translating:'Needs translation',
-  waiting_review:'Ready to review', rendering:'Exporting', done:'Done', error:'Error'};
+  waiting_review:'Ready to review', rendering:'Working', done:'Done', error:'Error'};
 const LANGNAME = {my:'Burmese', en:'English'};
-const langChip = j => `<span class="badge">${LANGNAME[j.subtitle_lang || 'my']}</span> `;
+const RUNNING = ['downloading','transcribing','rendering'];
+const langChip = j => `<span class="badge lang">${LANGNAME[j.subtitle_lang || 'my']}</span>`;
 const badge = j => `<span class="badge ${j.state}">${LABEL[j.state]||j.state}</span>`;
+// Is a job really working? (A crashed job keeps an old "working" state; ignore it after 90 s of silence.)
+const isRunning = j => RUNNING.includes(j.state) && (Date.now()/1000 - (j.updated||0)) < 90;
 
 function route() {
   clearInterval(timer);
@@ -90,98 +115,125 @@ function route() {
 }
 window.addEventListener('hashchange', route);
 
-/* ---------- home ---------- */
+/* ================= home ================= */
 async function showHome() {
   app.innerHTML = `
     <div class="card">
-      <div class="row"><input type="text" id="url" placeholder="Paste a YouTube link (video or Short)" style="flex:1;min-width:240px">
-      </div>
+      <h2>New video</h2>
+      <input type="text" id="url" placeholder="Paste a YouTube link (video or Short)" aria-label="YouTube link" autocomplete="off">
       <div class="row" style="margin-top:10px">
         <button id="go-my">Make Burmese subtitles</button>
-        <button id="go-en" class="secondary">Make English subtitles</button></div>
+        <button id="go-en" class="secondary">Make English subtitles</button>
+      </div>
       <div class="muted" style="margin-top:6px">Burmese = translated from the English speech. English = the English words as spoken (no translation).</div>
-      <div id="homeErr"></div>
+      <div id="homeErr" aria-live="polite"></div>
     </div>
-    <div class="card"><b>Jobs</b><div id="list" class="muted">Loading…</div></div>`;
+    <div class="card"><h2>Jobs</h2><div id="list"><div class="muted">Loading…</div></div></div>`;
   const start = lang => async () => {
+    const btns = [$('#go-my'), $('#go-en')]; btns.forEach(b => b.disabled = true);
     try {
       const {id} = await api('/jobs', {method:'POST', body:{url:$('#url').value, lang}});
       location.hash = '#/job/' + id;
-    } catch (e) { $('#homeErr').innerHTML = `<div class="error-box">${esc(e.message)}</div>`; }
+    } catch (e) {
+      $('#homeErr').innerHTML = `<div class="error-box">${esc(e.message)}</div>`;
+      btns.forEach(b => b.disabled = false);
+    }
   };
   $('#go-my').onclick = start('my');
   $('#go-en').onclick = start('en');
   $('#url').addEventListener('keydown', e => e.key === 'Enter' && $('#go-my').click());
+  $('#url').focus();
+
+  $('#list').addEventListener('click', async e => {
+    const del = e.target.closest('[data-del]'), retry = e.target.closest('[data-retry]');
+    try {
+      if (del && confirm('Delete this job and all its files?')) { await api('/jobs/' + del.dataset.del, {method:'DELETE'}); refresh(); }
+      if (retry) { await api(`/jobs/${retry.dataset.retry}/retry`, {method:'POST'}); location.hash = '#/job/' + retry.dataset.retry; }
+    } catch (err) { alert(err.message); }
+  });
   const refresh = async () => {
-    const list = await api('/jobs');
+    let list; try { list = await api('/jobs'); } catch (e) { return; }
     $('#list').innerHTML = list.length ? list.map(j => `
-      <div class="job" onclick="location.hash='#/job/${j.id}'">
-        <div><div>${esc(j.title || j.url)}</div><div class="muted">${esc(j.message||'')}</div></div>
-        <div>${langChip(j)}${badge(j)}</div></div>`).join('') : 'No jobs yet. Paste a link above.';
+      <div class="job">
+        <div class="grow">
+          <a class="title" href="#/job/${j.id}">${esc(j.title || j.url)}</a>
+          <div class="muted">${esc(j.message||'')}</div>
+          ${isRunning(j) ? `<div class="bar"><div style="width:${j.progress||4}%"></div></div>` : ''}
+        </div>
+        ${langChip(j)} ${badge(j)}
+        ${j.state === 'error' ? `<button class="small secondary" data-retry="${j.id}">Retry</button>` : ''}
+        <button class="small danger" data-del="${j.id}" aria-label="Delete job" title="Delete job">Delete</button>
+      </div>`).join('') : '<div class="empty muted">No jobs yet. Paste a YouTube link above to start.</div>';
   };
   refresh(); timer = setInterval(refresh, 3000);
 }
 
-/* ---------- one job ---------- */
+/* ================= one job ================= */
 async function showJob(id) {
   app.innerHTML = `<div id="top"></div><div id="body"></div>`;
-  let lastState = null;
+  actionPending = false;
+  let lastKey = null;
   const refresh = async () => {
     let job;
-    try { job = await api('/jobs/' + id); } catch (e) { app.innerHTML = `<div class="error-box">${esc(e.message)}</div>`; return; }
-    $('#top').innerHTML = `<div class="card">
-        <div class="row" style="justify-content:space-between"><b>${esc(job.title || job.url)}</b><div>${langChip(job)}${badge(job)}</div></div>
-        <div class="muted">${esc(job.message||'')}</div>
-        ${['downloading','transcribing','rendering'].includes(job.state) ?
-          `<div class="bar"><div style="width:${job.progress||5}%"></div></div>` : ''}
-        ${job.state==='error' ? `<div class="error-box">${esc(job.message)}</div>` : ''}
-        <div class="row" style="margin-top:8px"><a class="muted" href="#/">← all jobs</a></div></div>`;
+    try { job = await api('/jobs/' + id); }
+    catch (e) { clearInterval(timer); app.innerHTML = `<div class="card"><div class="error-box">${esc(e.message)}</div><a href="#/">← all jobs</a></div>`; return; }
+    drawTop(job);
     const key = job.state + JSON.stringify(job.files);
     if ($('#vid') && (actionPending || job.state === 'rendering')) {
-      updateActions(job);                       // keep the review screen; just update the status + links
-      lastState = key;
-    } else if (key !== lastState) {
-      lastState = key; await renderBody(job);
-    }
+      updateActions(job); lastKey = key;       // keep the review screen; only update status + links
+    } else if (key !== lastKey) { lastKey = key; await renderBody(job); }
   };
   await refresh(); timer = setInterval(refresh, 1500);
 }
 
+function drawTop(job) {
+  const running = isRunning(job);
+  $('#top').innerHTML = `<div class="card">
+    <div class="row spread"><b class="grow">${esc(job.title || job.url)}</b><div class="row">${langChip(job)}${badge(job)}</div></div>
+    <div class="muted" aria-live="polite">${esc(job.state === 'error' ? '' : job.message || '')}</div>
+    ${running ? `<div class="bar"><div style="width:${job.progress||4}%"></div></div>` : ''}
+    ${job.state === 'error' ? `<div class="error-box">${esc(job.message)}</div>` : ''}
+    <div class="row" style="margin-top:8px">
+      <a class="muted" href="#/">← all jobs</a>
+      ${job.state === 'error' ? '<button class="small" id="retry">Try again</button>' : ''}
+    </div></div>`;
+  const r = $('#retry');
+  if (r) r.onclick = async () => { r.disabled = true; try { await api(`/jobs/${job.id}/retry`, {method:'POST'}); } catch (e) { alert(e.message); } };
+}
+
 async function renderBody(job) {
-  const body = $('#body'), id = job.id;
-  const busy = ['downloading','transcribing'].includes(job.state);
-  if (busy) { body.innerHTML = ''; return; }
-  if (job.state === 'error' && !job.files.original) { body.innerHTML = ''; return; }
-  const segs = await api(`/jobs/${id}/segments`);
+  const body = $('#body');
+  if (['downloading','transcribing'].includes(job.state) || (job.state === 'error' && !job.files.original)) { body.innerHTML = ''; return; }
+  const segs = await api(`/jobs/${job.id}/segments`);
   if (!segs.length) { body.innerHTML = ''; return; }
   const en = job.subtitle_lang === 'en';
   const translated = en || segs.some(s => s.my);
-  let html = '';
-  if (!en && (!translated || job.state === 'translating' || job.state === 'error')) html += translatePanel(job);
-  if (translated) html += reviewPanel(job, segs);
-  body.innerHTML = html;
+  body.innerHTML = (!en && (!translated || job.state === 'translating' || job.state === 'error') ? translatePanel() : '')
+                 + (translated ? reviewPanel(job, segs) : '');
   if (translated) { wireReview(job, segs); updateActions(job); } else wireTranslate(job);
 }
 
-function translatePanel(job) {
-  return `<div class="card"><b>Translate to Burmese</b>
-    <p class="muted">${'Choose how to translate. Option A is automatic (uses your OpenAI key). Option B is manual: copy a prompt into claude.ai and paste the answer back.'}</p>
+/* ---------- translate ---------- */
+function translatePanel() {
+  return `<div class="card" id="trPanel"><h2>Translate to Burmese</h2>
+    <p class="muted" style="margin-top:0">Option A is automatic (uses your OpenAI key). Option B is manual: copy a prompt into claude.ai and paste the answer back.</p>
     <div class="row"><button id="tr-openai">A) Translate with OpenAI</button>
     <button class="secondary" id="tr-manual">B) Manual Claude mode</button></div>
     <div id="manual" style="display:none;margin-top:14px">
       <div class="muted">1. Copy this prompt and paste it into claude.ai:</div>
       <pre class="prompt" id="promptText">Loading…</pre>
-      <button class="secondary" id="copy">Copy prompt</button>
+      <button class="secondary small" id="copy">Copy prompt</button>
       <div class="muted" style="margin-top:12px">2. Paste Claude's JSON answer here:</div>
       <textarea id="answer" rows="6" placeholder='{"1": "…", "2": "…"}'></textarea>
       <div class="row" style="margin-top:8px"><button id="apply">Apply answer</button></div>
-    </div><div id="trErr"></div></div>`;
+    </div><div id="trErr" aria-live="polite"></div></div>`;
 }
 function wireTranslate(job) {
   const err = m => $('#trErr').innerHTML = m ? `<div class="error-box">${esc(m)}</div>` : '';
   $('#tr-openai').onclick = async () => {
-    err(''); $('#tr-openai').disabled = true; $('#tr-openai').textContent = 'Translating…';
-    try { await api(`/jobs/${job.id}/translate`, {method:'POST', body:{mode:'openai'}}); } catch (e) { err(e.message); }
+    err(''); const b = $('#tr-openai'); b.disabled = true; b.textContent = 'Translating…';
+    try { await api(`/jobs/${job.id}/translate`, {method:'POST', body:{mode:'openai'}}); }
+    catch (e) { err(e.message); b.disabled = false; b.textContent = 'A) Translate with OpenAI'; }
   };
   $('#tr-manual').onclick = async () => {
     $('#manual').style.display = 'block';
@@ -195,80 +247,140 @@ function wireTranslate(job) {
   };
 }
 
+/* ---------- review ---------- */
 function dlLinks(job) {
   const f = job.files || {}, en = job.subtitle_lang === 'en';
-  const a = (kind, label) => `<a class="btn secondary" href="/api/jobs/${job.id}/download/${kind}" download>${label}</a>`;
+  const a = (kind, label) => `<a class="btn secondary small" href="/api/jobs/${job.id}/download/${kind}" download>${label}</a>`;
   return [f.srt && a('srt', en ? 'english.srt' : 'burmese.srt'), f.soft && a('soft', 'mp4 with soft subs'),
           f.burned && a('burned', 'burned-in mp4')].filter(Boolean).join('');
 }
 
-function updateActions(job) {
-  const msg = $('#actionMsg'); if (!msg) return;
-  const running = job.state === 'rendering';
-  const finished = actionPending && !running && (job.state === 'done' || job.state === 'error')
-                   && job.updated * 1000 >= actionStart;
-  if (finished) actionPending = false;
-  $('#dl').innerHTML = dlLinks(job);
-  [$('#export'), $('#render')].forEach(b => b && (b.disabled = running || actionPending));
-  if (running || actionPending) { msg.className = 'muted'; msg.textContent = `⏳ ${job.message || 'Working'}… ${job.progress ? job.progress + '%' : ''}`; }
-  else if (finished && job.state === 'done') { msg.className = 'saved'; msg.textContent = `✓ ${job.message} - download below`; }
-  else if (finished && job.state === 'error') { msg.className = 'error-box'; msg.textContent = job.message; }
-}
-
 function reviewPanel(job, segs) {
-  const f = job.files || {};
-  const L = job.subtitle_lang === 'en' ? 'en' : 'my', en = L === 'en';
-  const srtName = en ? 'english.srt' : 'burmese.srt';
+  const en = job.subtitle_lang === 'en', L = en ? 'en' : 'my';
   const warn = (job.warnings||[]).length ? `<div class="warn-box">${job.warnings.map(esc).join('<br>')}</div>` : '';
   return `${warn}<div class="review">
-    <div class="player card"><video id="vid" src="/api/jobs/${job.id}/video" controls playsinline></video>
-      <div id="live" class="muted">Click a line to jump to it</div>
-      <div class="row" style="margin-top:10px">
-        <button id="export">Save &amp; export .srt + soft-sub mp4</button>
-      </div>
-      <div class="row" style="margin-top:12px">
+    <div class="player card">
+      <div class="vwrap"><video id="vid" src="/api/jobs/${job.id}/video" controls playsinline preload="metadata"></video>
+        <div id="cap" aria-hidden="true"></div></div>
+      <div class="muted" style="margin-top:6px">Click a line on the right to jump to it. The caption on the video is a quick preview.</div>
+
+      <div class="tools row">
         <label class="muted">Subtitle height
-          <select id="burnPos"><option value="0.07">Bottom</option><option value="0.20">Raised</option>
-          <option value="0.32">High</option></select></label>
+          <select id="burnPos"><option value="0.07">Bottom</option><option value="0.20">Raised</option><option value="0.32">High</option></select></label>
         <label class="muted"><input type="checkbox" id="burnBox"> Black box behind text</label>
       </div>
       <div class="row" style="margin-top:8px">
-        <button id="render">Render burned-in video</button>
+        <button class="secondary small" id="pvBtn">Preview exact frame</button>
+        <span class="muted" id="pvNote">uses the line you are editing</span>
       </div>
-      <div id="actionMsg" class="muted" style="margin-top:8px"></div>
-      <div id="dl" class="row" style="margin-top:8px">${dlLinks(job)}</div>
-      <div class="muted" style="margin-top:4px">Burned-in = subtitles drawn on the picture; plays everywhere (QuickTime, phone). Tip: if the video already has English text at the bottom, choose Raised or use the black box.</div>
-      <div class="muted" style="margin-top:6px">Edits save automatically as you type.</div>
-      <div class="row" style="margin-top:10px">${en ? '' : '<button class="secondary" id="retr">Translate again…</button>'}</div></div>
-    <div class="card"><b>Review ${en ? "English" : "Burmese"} subtitles</b>
+      <div id="pvBox" aria-live="polite"></div>
+
+      <div class="section">
+        <div class="row"><button id="export">Save &amp; export .srt + soft-sub mp4</button></div>
+        <div class="row" style="margin-top:8px"><button id="render">Render burned-in video</button></div>
+        <div class="muted" style="margin-top:6px">Burned-in = subtitles drawn on the picture; plays everywhere (QuickTime, phone). Soft subs are a hidden track that only some players show.</div>
+        <div id="actionMsg" class="muted" style="margin-top:8px" aria-live="polite"></div>
+        <div id="dl" class="row" style="margin-top:8px">${dlLinks(job)}</div>
+      </div>
+      <div class="section row spread"><span class="muted" id="saveState">Edits save automatically as you type.</span>
+        ${en ? '' : '<button class="secondary small" id="retr">Translate again…</button>'}</div>
+    </div>
+    <div class="card"><h2>Review ${en ? 'English' : 'Burmese'} subtitles</h2>
+      <div class="muted" style="margin-bottom:6px">${segs.length} lines. Press Ctrl+Enter to jump to the next line.</div>
       ${segs.map(s => `<div class="seg" id="seg${s.id}">
-        <div class="time" data-t="${s.start}">${fmt(s.start)}</div>
+        <button class="time" data-t="${s.start}" title="Jump to this line">${fmt(s.start)}</button>
         ${en ? '' : `<div class="en" data-t="${s.start}">${esc(s.en)}</div>`}
-        <textarea class="my" data-id="${s.id}" rows="2">${esc(s[L])}</textarea></div>`).join('')}
+        <textarea class="my" data-id="${s.id}" rows="2" lang="${en ? 'en' : 'my'}" aria-label="Subtitle ${s.id}">${esc(s[L])}</textarea>
+        <div class="hint" id="hint${s.id}"></div></div>`).join('')}
     </div></div>`;
 }
+
+/* Reading-speed check for Burmese translations (consonants ~ syllables). */
+function readingHint(text, dur, L) {
+  text = (text || '').trim();
+  if (!text) return L === 'my' ? '⚠ Empty - this line will not be shown' : '';
+  const d = Math.max(dur, 0.3);
+  if (L === 'en') return '';       // English shows what was said; nothing to shorten
+  const r = (text.match(/[က-အ]/g) || []).length / d;
+  return r > 8 ? `⚠ Too fast to read (${r.toFixed(1)} syllables/sec) - shorten it` : '';
+}
+
 function wireReview(job, segs) {
   const L = job.subtitle_lang === 'en' ? 'en' : 'my';
-  const vid = $('#vid'), live = $('#live');
-  segTimes = segs;
-  const jump = t => { vid.currentTime = t; vid.play(); };
-  document.querySelectorAll('.time,.en').forEach(el => el.onclick = () => jump(+el.dataset.t));
-  const saveTimers = {};
-  document.querySelectorAll('textarea.my').forEach(ta => {
-    ta.oninput = () => {
-      const id = ta.dataset.id; segs.find(s => s.id == id)[L] = ta.value;
-      clearTimeout(saveTimers[id]);
-      saveTimers[id] = setTimeout(() => api(`/jobs/${job.id}/segments/${id}`, {method:'PUT', body:{my:ta.value}}), 500);
-    };
-    ta.onfocus = () => { const s = segs.find(s => s.id == ta.dataset.id); vid.currentTime = s.start; };
-  });
+  const vid = $('#vid'), cap = $('#cap');
+  const byId = id => segs.find(s => s.id == id);
+  let activeId = segs[0].id, margin = 0.07;
+
+  const hint = s => { const h = readingHint(s[L], s.end - s.start, L);
+    $('#hint' + s.id).textContent = h; $(`textarea[data-id="${s.id}"]`).classList.toggle('bad', !!h); };
+  segs.forEach(hint);
+
+  /* caption overlay: same size rule as the real render (min(0.045*height, 0.052*width)) */
+  const placeCaption = () => {          // fit the caption to the actual picture (not the black bars)
+    const W = vid.videoWidth, H = vid.videoHeight; if (!W) return;
+    const bw = vid.clientWidth, bh = vid.clientHeight, sc = Math.min(bw / W, bh / H), dw = W * sc, dh = H * sc;
+    cap.style.left = ((bw - dw) / 2 + dw * 0.06) + 'px'; cap.style.width = (dw * 0.88) + 'px';
+    cap.style.bottom = ((bh - dh) / 2 + dh * margin) + 'px';
+    cap.style.fontSize = (Math.min(H * 0.045, W * 0.052) * sc) + 'px';
+  };
+  vid.addEventListener('loadedmetadata', placeCaption); window.addEventListener('resize', placeCaption); placeCaption();
+  const showCaption = s => cap.textContent = s ? (s[L] || '') : '';
+
+  const jump = (id, play) => { const s = byId(id); activeId = id; vid.currentTime = s.start + 0.05; showCaption(s); if (play) vid.play().catch(() => {}); };
+  document.querySelectorAll('.time,.en').forEach(el => el.onclick = () => jump(el.closest('.seg').id.slice(3), true));
+
   vid.ontimeupdate = () => {
     const t = vid.currentTime, cur = segs.find(s => t >= s.start && t < s.end);
     document.querySelectorAll('.seg.active').forEach(e => e.classList.remove('active'));
-    if (cur) { $('#seg' + cur.id).classList.add('active'); live.className = ''; live.textContent = cur[L] || cur.en; }
-    else live.textContent = '';
+    if (cur) { $('#seg' + cur.id).classList.add('active'); activeId = cur.id; }
+    showCaption(cur);
   };
-  // Save every edit in ONE request, run the action, and always tell the user what happened.
+
+  /* autosave */
+  const saveTimers = {}, setSave = (t, cls) => { const el = $('#saveState'); el.textContent = t; el.className = cls || 'muted'; };
+  document.querySelectorAll('textarea.my').forEach((ta, i, all) => {
+    const id = ta.dataset.id;
+    ta.oninput = () => {
+      const s = byId(id); s[L] = ta.value; hint(s); showCaption(s); setSave('Saving…');
+      clearTimeout(saveTimers[id]);
+      saveTimers[id] = setTimeout(async () => {
+        try { await api(`/jobs/${job.id}/segments/${id}`, {method:'PUT', body:{my:ta.value}}); setSave('✓ Saved', 'saved'); }
+        catch (e) { setSave('⚠ Could not save: ' + e.message, 'error-box'); }
+      }, 500);
+    };
+    ta.onfocus = () => { activeId = +id; const s = byId(id); vid.currentTime = s.start + 0.05; showCaption(s);
+      document.querySelectorAll('.seg.active').forEach(e => e.classList.remove('active')); $('#seg' + id).classList.add('active'); };
+    ta.onkeydown = e => { if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) { e.preventDefault(); (all[i+1] || ta).focus(); } };
+  });
+
+  /* height / box settings: apply to the live caption and remember on the server */
+  const saveSettings = () => api('/settings', {method:'PUT', body:{burn_bottom_margin:+$('#burnPos').value,
+                                                 burn_background:$('#burnBox').checked ? 'box' : 'none'}});
+  api('/settings').then(s => {
+    const sel = $('#burnPos'), opts = [...sel.options].map(o => +o.value);
+    sel.value = opts.reduce((a, b) => Math.abs(b - s.burn_bottom_margin) < Math.abs(a - s.burn_bottom_margin) ? b : a);
+    $('#burnBox').checked = s.burn_background === 'box';
+    margin = +sel.value; placeCaption();
+  });
+  const onSetting = async () => { margin = +$('#burnPos').value; placeCaption(); try { await saveSettings(); } catch (e) {}
+    if ($('#pvBox img')) $('#pvBtn').click(); };
+  $('#burnPos').onchange = onSetting; $('#burnBox').onchange = onSetting;
+
+  /* exact preview of one line on a real frame */
+  $('#pvBtn').onclick = async () => {
+    const box = $('#pvBox'), s = byId(activeId);
+    box.innerHTML = '<div class="muted" style="margin-top:8px">Rendering preview…</div>';
+    try {
+      await saveSettings();
+      await api(`/jobs/${job.id}/segments/${s.id}`, {method:'PUT', body:{my:s[L]}});
+      const img = new Image(); img.alt = `Preview of subtitle ${s.id}`;
+      img.onload = () => { box.innerHTML = ''; box.appendChild(img); };
+      img.onerror = () => box.innerHTML = '<div class="error-box">Could not make the preview.</div>';
+      img.src = `/api/jobs/${job.id}/preview?seg=${s.id}&_=${Date.now()}`;
+    } catch (e) { box.innerHTML = `<div class="error-box">${esc(e.message)}</div>`; }
+  };
+
+  /* export / render: save everything in ONE request, then run, and always say what happened */
   const act = async (label, fn) => {
     const msg = $('#actionMsg');
     [$('#export'), $('#render')].forEach(b => b.disabled = true);
@@ -279,28 +391,32 @@ function wireReview(job, segs) {
       await api(`/jobs/${job.id}/segments`, {method:'PUT', body:{texts}});
       actionStart = Date.now() - 1000;
       await fn();
-      actionPending = true;
-      msg.textContent = `⏳ ${label}…`;
+      actionPending = true; msg.textContent = `⏳ ${label}…`;
     } catch (e) {
-      actionPending = false;
-      msg.className = 'error-box'; msg.textContent = 'Could not ' + label.toLowerCase() + ': ' + e.message;
+      actionPending = false; msg.className = 'error-box';
+      msg.textContent = 'Could not ' + label.toLowerCase() + ': ' + e.message;
       [$('#export'), $('#render')].forEach(b => b.disabled = false);
     }
   };
   $('#export').onclick = () => act('Exporting subtitles', () => api(`/jobs/${job.id}/export`, {method:'POST'}));
-  api('/settings').then(s => {
-    const sel = $('#burnPos'); const opts = [...sel.options].map(o => +o.value);
-    sel.value = opts.reduce((a, b) => Math.abs(b - s.burn_bottom_margin) < Math.abs(a - s.burn_bottom_margin) ? b : a);
-    $('#burnBox').checked = s.burn_background === 'box';
-  });
-  $('#render').onclick = () => act('Rendering burned-in video', async () => {
-    await api('/settings', {method:'PUT', body:{burn_bottom_margin:+$('#burnPos').value,
-                                                 burn_background:$('#burnBox').checked ? 'box' : 'none'}});
-    await api(`/jobs/${job.id}/render`, {method:'POST'});
-  });
-  if ($('#retr')) $('#retr').onclick = () => { $('#body').insertAdjacentHTML('afterbegin', translatePanel(job)); wireTranslate(job);
-    $('#retr').disabled = true; };
+  $('#render').onclick = () => act('Rendering burned-in video', async () => { await saveSettings(); await api(`/jobs/${job.id}/render`, {method:'POST'}); });
+
+  const retr = $('#retr');
+  if (retr) retr.onclick = () => { if ($('#trPanel')) return; $('#body').insertAdjacentHTML('afterbegin', translatePanel()); wireTranslate(job); retr.disabled = true; };
 }
+
+function updateActions(job) {
+  const msg = $('#actionMsg'); if (!msg) return;
+  const running = job.state === 'rendering';
+  const finished = actionPending && !running && (job.state === 'done' || job.state === 'error') && job.updated * 1000 >= actionStart;
+  if (finished) actionPending = false;
+  $('#dl').innerHTML = dlLinks(job);
+  [$('#export'), $('#render')].forEach(b => b && (b.disabled = running || actionPending));
+  if (running || actionPending) { msg.className = 'muted'; msg.textContent = `⏳ ${job.message || 'Working'}… ${job.progress ? job.progress + '%' : ''}`; }
+  else if (finished && job.state === 'done') { msg.className = 'saved'; msg.textContent = `✓ ${job.message} - download below`; }
+  else if (finished && job.state === 'error') { msg.className = 'error-box'; msg.textContent = job.message; }
+}
+
 route();
 </script>
 </body>

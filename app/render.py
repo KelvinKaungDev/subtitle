@@ -237,3 +237,25 @@ def burn(video: Path, segments: list[dict], work_dir: Path, out: Path, on_progre
     if on_progress:
         on_progress(1.0)
     return len(items)
+
+
+def preview_frame(video: Path, segment: dict, key: str, out: Path) -> None:
+    """One JPEG: a real frame from the video with this subtitle drawn exactly as the render would."""
+    info = probe(video)
+    w, h = info["w"], info["h"]
+    t = min(max((segment["start"] + segment["end"]) / 2, 0), max(info["duration"] - 0.1, 0))
+    frame, sub = out.with_name("preview_frame.png"), out.with_name("preview_sub.png")
+    r = subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-ss", f"{t:.3f}", "-i", str(video),
+                        "-frames:v", "1", str(frame)], capture_output=True, text=True)
+    if r.returncode or not frame.exists():
+        raise RuntimeError(f"Could not read a frame: {r.stderr.strip()[-300:]}")
+    text = (segment.get(key) or "").strip() or "(empty subtitle)"
+    pw, ph = render_png(text, w, h, sub, latin=(key == "en"))
+    img = Image.open(frame).convert("RGBA")
+    cfg = load_settings()
+    img.alpha_composite(Image.open(sub), ((w - pw) // 2, round(h - ph - h * cfg["burn_bottom_margin"])))
+    img = img.convert("RGB")
+    img.thumbnail((900, 1100))
+    img.save(out, quality=88)
+    frame.unlink(missing_ok=True)
+    sub.unlink(missing_ok=True)
